@@ -11,25 +11,22 @@ inputs:
   fastq_dir_rna:
     label: "Directory containing RNA-seq FASTQ files"
     type: Directory[]
-  fastq_dir_adt:
-    label: "Directory containing ADT FASTQ files"
-    type: Directory
-  fastq_dir_hto:
-    label: "Directory containing HTO FASTQ files"
-    type: Directory?
-  adt_tsv:
-    label: "ADT feature barcode"
-    type: File
-  hto_tsv:
-    label: "HTO feature barcode"
-    type: File?
-  assay:
+  fastq_dir_atac:
+    label: "Directory containing ATAC-seq FASTQ files"
+    type: Directory[]
+  assay_rna:
     label: "scRNA-seq assay"
     type: string
-  threads:
+  assay_atac:
+    label: "scATAC-seq assay"
+    type: string
+  threads_rna:
     label: "Number of threads for Salmon"
     type: int
     default: 1
+  threads_atac:
+    label: "Number of threads for scATAC-seq"
+    type: int?
   expected_cell_count:
     type: int?
   keep_all_barcodes:
@@ -40,11 +37,13 @@ inputs:
   trans_filename:
     label: "Filename of barcode transformation mapping file for feature barcoding protocol use TotalSeq B or C"
     type: string?
+  exclude_bam:
+    type: boolean?
 outputs:
   muon_original_h5mu:
     outputSource: consolidate_counts/muon_dir
     type: File
-    label: "Consolidated expression per cell: gene expression, ADT, HTO (optional)"
+    label: "Consolidated expression cell-by-gene, cell-by-bin"
   muon_processed_h5mu:
     outputSource: downstream_analysis/muon_processed
     type: File
@@ -53,14 +52,10 @@ outputs:
     outputSource: downstream_analysis/mofa_out
     type: File
     label: "Multi-omics factor analysis model"
-  rna_embedding_result:
-    outputSource: downstream_analysis/rna_embedding
-    type: File
-    label: "Leiden clustering result on rna modality"
-  adt_embedding_result:
-    outputSource: downstream_analysis/adt_embedding
-    type: File
-    label: "Leiden clustering result on adt modality"
+#  rna_embedding_result:
+#    outputSource: downstream_analysis/rna_embedding
+#    type: File
+#    label: "Leiden clustering result on rna modality"
   joint_embedding_result:
     outputSource: downstream_analysis/joint_embedding
     type: File
@@ -71,9 +66,9 @@ steps:
       fastq_dir:
         source: fastq_dir_rna
       assay:
-        source: assay
+        source: assay_rna
       threads:
-        source: threads
+        source: threads_rna
       expected_cell_count:
         source: expected_cell_count
       keep_all_barcodes:
@@ -84,44 +79,35 @@ steps:
       - raw_count_matrix
       - genome_build_json
     run: salmon-rnaseq/steps/salmon-quantification.cwl
-  adt_quantification:
+  atac_quantification:
     in:
-      fastq_dir_adt:
-        source: fastq_dir_adt
-      adt_tsv:
-        source: adt_tsv
+      sequence_directory:
+        source: fastq_dir_atac
+      assay:
+        source: assay_atac
       threads:
-        source: threads
-    out: 
-      - count_matrix_h5ad_adt
-    run: steps/adt_quantification.cwl
-  hto_quantification:
-    in:
-      fastq_dir_hto:
-        source: fastq_dir_hto
-      hto_tsv:
-        source: hto_tsv
-      threads:
-        source: threads
-    out: 
-      - count_matrix_h5ad_hto
-    when: $(inputs.fastq_dir_hto != null)
-    run: steps/hto_quantification.cwl
+        source: threads_atac
+      exclude_bam:
+        source: exclude_bam
+    out:
+      - cell_by_bin_h5ad
+      - cell_by_gene_h5ad
+    run: sc-atac-seq/sc_atac_seq_prep_process_analyze.cwl
   consolidate_counts:
     in:
       count_matrix_h5ad_rna:
         source:
           rna_quantification/count_matrix_h5ad
-      count_matrix_h5ad_adt:
+      cell_by_bin_matrix_h5ad_atac:
         source:
-          adt_quantification/count_matrix_h5ad_adt
-      count_matrix_h5ad_hto:
+          atac_quantification/cell_by_bin_h5ad
+      cell_by_gene_matrix_h5ad_atac:
         source:
-          hto_quantification/count_matrix_h5ad_hto
-      trans_dir:
+          atac_quantification/cell_by_gene_h5ad
+      transformation_dir:
         source:
           trans_dir
-      rna_salmon_dir:
+      transformation_filename:
         source:
           trans_filename
     out: [muon_dir]
@@ -134,7 +120,5 @@ steps:
     out: 
       - muon_processed
       - mofa_out
-      - rna_embedding
-      - adt_embedding
       - joint_embedding
     run: steps/downstream.cwl
