@@ -1,0 +1,8 @@
+{
+    "sequence_directory": [ {
+           "class": "Directory",
+           "path": "/hive/hubmap/data/CMU_Tools_Testing_Group/stanford-snatac/8098d2534f91b41b2f242609441eb30f"
+     }
+    ],
+    "assay": "multiome_10x"
+}
