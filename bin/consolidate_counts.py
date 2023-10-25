@@ -30,22 +30,17 @@ def transform_rna_barcode(barcode_dict: Path, rna_name: list):
 
 def main(
     rna_file: Path,
-    adt_file: Path,
-    hto_file: Path,
+    atac_cell_by_bin: Path,
+    atac_cell_by_gene: Path,
     trans_dir: Path,
     trans_filename: str,
 ):
 
-    rna_expr = sc.read_h5ad(rna_file)
+    rna_expr = mu.read(rna_file)
     rna_name = list(rna_expr.obs_names)
-    adt_expr = sc.read_h5ad(adt_file)
-    adt_name = list(adt_expr.obs_names)
-    if exists(hto_file):
-        hto_expr = sc.read_h5ad(hto_file)
-        hto_name = list(hto_expr.obs_names)
-    else:
-        print("HTO expression matrix is not found. Will not combine HTO experiment.")
-
+    cbb = mu.read(atac_cell_by_bin)
+    cbg = mu.read(atac_cell_by_gene)
+    
     # if the transformation file of given name exist, perform transformation step
     if trans_dir != None:
         trans_file_path = trans_dir / trans_filename
@@ -64,30 +59,14 @@ def main(
         else:
             raise ValueError(trans_filename, " is not found under given directory.")
 
-    if exists(hto_file):
-        common_cells = list(set(adt_name) & set(hto_name) & set(rna_name))
-        print("There are", len(common_cells), "common cells in RNA, ADT and HTO experiments.")
-        mdata = mu.MuData(
-            {
-                "rna": rna_expr[common_cells, :],
-                "adt": adt_expr[common_cells, :],
-                "hto": hto_expr[common_cells, :],
-            }
-        )
-        print(
-            "Saving MuData filtered by",
-            len(common_cells),
-            "common cells in RNA, ADT and HTO experiments...",
-        )
-    else:
-        common_cells = list(set(adt_name) & set(rna_name))
-        print("There are", len(common_cells), "common cells in RNA and ADT experiments.")
-        mdata = mu.MuData({"rna": rna_expr[common_cells, :], "adt": adt_expr[common_cells, :]})
-        print(
-            "Saving MuData filtered by",
-            len(common_cells),
-            "common cells in RNA and ADT experiments...",
-        )
+    #print("There are", len(common_cells), "common cells in RNA and Atac experiments.")
+    mdata = mu.MuData({"rna": rna_expr, "atac_cell_by_gene": cbb, "atac_cell_by_bin": cbg})
+    common_cells = mu.pp.intersect_obs(mdata)
+    print(
+        "Saving MuData filtered by",
+        len(common_cells),
+        "common cells in RNA and ADT experiments...",
+    )
 
     mdata.write("mudata_raw.h5mu")
 
@@ -95,8 +74,8 @@ def main(
 if __name__ == "__main__":
     p = ArgumentParser()
     p.add_argument("--rna_file", type=Path)
-    p.add_argument("--adt_file", type=Path)
-    p.add_argument("--hto_file", type=Path)
+    p.add_argument("--atac_cell_by_gene", type=Path)
+    p.add_argument("--atac_cell_by_bin", type=Path)
     p.add_argument("--trans_dir", type=Path)
     p.add_argument("--trans_filename", type=str)
 
