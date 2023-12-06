@@ -1,0 +1,7 @@
+git+https://github.com/hubmapconsortium/fastq-utils@v0.2.3
+pandas
+scipy
+anndata
+muon
+leidenalg
+mofapy2
