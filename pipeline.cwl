@@ -1,7 +1,7 @@
 #!/usr/bin/env cwl-runner
 class: Workflow
 cwlVersion: v1.2
-label: CITE-seq pipeline using Salmon and Alevin (HuBMAP scRNA-seq pipeline)
+label: multiome pipeline using Salmon and Alevin (HuBMAP scRNA-seq pipeline) and HuBMAP scATAC-seq pipeline
 requirements:
   SubworkflowFeatureRequirement: {}
   ScatterFeatureRequirement: {}
