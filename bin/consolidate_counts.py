@@ -36,10 +36,10 @@ def main(
     trans_filename: str,
 ):
 
-    rna_expr = mu.read(rna_file)
+    rna_expr = mu.read(str(rna_file))
     rna_name = list(rna_expr.obs_names)
-    cbb = mu.read(atac_cell_by_bin)
-    cbg = mu.read(atac_cell_by_gene)
+    cbb = mu.read(str(atac_cell_by_bin))
+    cbg = mu.read(str(atac_cell_by_gene))
     
     # if the transformation file of given name exist, perform transformation step
     if trans_dir != None:
@@ -60,12 +60,12 @@ def main(
             raise ValueError(trans_filename, " is not found under given directory.")
 
     #print("There are", len(common_cells), "common cells in RNA and Atac experiments.")
-    mdata = mu.MuData({"rna": rna_expr, "atac_cell_by_gene": cbb, "atac_cell_by_bin": cbg})
-    common_cells = mu.pp.intersect_obs(mdata)
+    mdata = mu.MuData({"rna": rna_expr, "atac_cell_be_bin": cbb, "atac_cell_by_gene": cbg})
+    mu.pp.intersect_obs(mdata)
     print(
         "Saving MuData filtered by",
-        len(common_cells),
-        "common cells in RNA and ADT experiments...",
+        len(mdata),
+        "common cells in RNA and Atac experiments...",
     )
 
     mdata.write("mudata_raw.h5mu")
@@ -74,11 +74,11 @@ def main(
 if __name__ == "__main__":
     p = ArgumentParser()
     p.add_argument("--rna_file", type=Path)
-    p.add_argument("--atac_cell_by_gene", type=Path)
     p.add_argument("--atac_cell_by_bin", type=Path)
+    p.add_argument("--atac_cell_by_gene", type=Path)
     p.add_argument("--trans_dir", type=Path)
     p.add_argument("--trans_filename", type=str)
 
     args = p.parse_args()
 
-    main(args.rna_file, args.adt_file, args.hto_file, args.trans_dir, args.trans_filename)
+    main(args.rna_file, args.atac_cell_by_bin, args.atac_cell_by_gene, args.trans_dir, args.trans_filename)
