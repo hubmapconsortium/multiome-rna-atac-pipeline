@@ -1,6 +1,6 @@
 cwlVersion: v1.1
 class: CommandLineTool
-label: Downstream analysis for RNA and ADT 
+label: Downstream analysis for RNA and ADT
 requirements:
   DockerRequirement:
       dockerPull: hubmap/citeseq_analysis:latest
@@ -25,4 +25,4 @@ outputs:
     type: File
     outputBinding:
       glob: "leiden_cluster_combined.pdf"
-  
+

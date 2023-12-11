@@ -117,7 +117,7 @@ steps:
 #      muon_dir:
 #        source:
 #          consolidate_counts/muon_dir
-#    out: 
+#    out:
 #      - muon_processed
 #      - mofa_out
 #      - joint_embedding
