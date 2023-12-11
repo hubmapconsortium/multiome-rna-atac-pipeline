@@ -35,12 +35,11 @@ def main(
     trans_dir: Path,
     trans_filename: str,
 ):
-
     rna_expr = mu.read(str(rna_file))
     rna_name = list(rna_expr.obs_names)
     cbb = mu.read(str(atac_cell_by_bin))
     cbg = mu.read(str(atac_cell_by_gene))
-    
+
     # if the transformation file of given name exist, perform transformation step
     if trans_dir != None:
         trans_file_path = trans_dir / trans_filename
@@ -59,7 +58,7 @@ def main(
         else:
             raise ValueError(trans_filename, " is not found under given directory.")
 
-    #print("There are", len(common_cells), "common cells in RNA and Atac experiments.")
+    # print("There are", len(common_cells), "common cells in RNA and Atac experiments.")
     mdata = mu.MuData({"rna": rna_expr, "atac_cell_be_bin": cbb, "atac_cell_by_gene": cbg})
     mu.pp.intersect_obs(mdata)
     print(
@@ -81,4 +80,10 @@ if __name__ == "__main__":
 
     args = p.parse_args()
 
-    main(args.rna_file, args.atac_cell_by_bin, args.atac_cell_by_gene, args.trans_dir, args.trans_filename)
+    main(
+        args.rna_file,
+        args.atac_cell_by_bin,
+        args.atac_cell_by_gene,
+        args.trans_dir,
+        args.trans_filename,
+    )
