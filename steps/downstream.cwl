@@ -1,9 +1,9 @@
 cwlVersion: v1.1
 class: CommandLineTool
-label: Downstream analysis for RNA and ADT 
+label: Downstream analysis for RNA and ATAC 
 requirements:
   DockerRequirement:
-      dockerPull: hubmap/citeseq_analysis:latest
+      dockerPull: hubmap/multiome:latest
 baseCommand: /opt/downstream.py
 
 inputs:
