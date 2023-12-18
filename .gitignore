@@ -1,0 +1,10 @@
+*.fastq
+*.fastq.gz
+*.h5ad
+*.h5mu
+*.hdf5
+*.pdf
+*.zarr
+.idea/
+__pycache__/
+out/

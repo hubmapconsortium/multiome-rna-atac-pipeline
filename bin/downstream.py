@@ -7,7 +7,6 @@ import muon as mu
 import numpy as np
 import scanpy as sc
 from muon import prot as pt
-
 from plot_utils import new_plot
 
 
