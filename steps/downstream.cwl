@@ -3,7 +3,7 @@ class: CommandLineTool
 label: Downstream analysis for RNA and ATAC 
 requirements:
   DockerRequirement:
-      dockerPull: hubmap/multiome:latest
+      dockerPull: hubmap/multiome_analysis:latest
 baseCommand: /opt/downstream.py
 
 inputs:
