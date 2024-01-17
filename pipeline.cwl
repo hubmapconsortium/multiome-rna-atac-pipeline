@@ -112,13 +112,13 @@ steps:
           trans_filename
     out: [muon_dir]
     run: steps/consolidate_counts.cwl
-#  downstream_analysis:
-#    in:
-#      muon_dir:
-#        source:
-#          consolidate_counts/muon_dir
-#    out: 
-#      - muon_processed
-#      - mofa_out
-#      - joint_embedding
-#    run: steps/downstream.cwl
+  downstream_analysis:
+    in:
+      muon_dir:
+        source:
+          consolidate_counts/muon_dir
+    out: 
+      - muon_processed
+      - mofa_out
+      - joint_embedding
+    run: steps/downstream.cwl
