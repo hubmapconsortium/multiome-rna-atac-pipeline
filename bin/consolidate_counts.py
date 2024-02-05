@@ -69,7 +69,7 @@ def main(
             raise ValueError(trans_filename, " is not found under given directory.")
 
     # print("There are", len(common_cells), "common cells in RNA and Atac experiments.")
-    mdata = mu.MuData({"rna": rna_expr, "atac_cell_be_bin": cbb, "atac_cell_by_gene": cbg})
+    mdata = mu.MuData({"rna": rna_expr, "atac_cell_by_bin": cbb, "atac_cell_by_gene": cbg})
     mu.pp.intersect_obs(mdata)
     print(
         "Saving MuData filtered by",
