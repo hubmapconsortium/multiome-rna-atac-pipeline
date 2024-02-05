@@ -40,6 +40,16 @@ def main(
     cbb = mu.read(str(atac_cell_by_bin))
     cbg = mu.read(str(atac_cell_by_gene))
 
+    #get rid of the BAM_data# artifact from ArchR in the atac-seq data
+    cbg_names = list(cbg.obs_names)
+    cbg_names = [s.replace("BAM_data#",'') for s in cbg_names]
+    cbg.obs.index = cbg_names
+
+    cbb_names = list(cbb.obs_names)
+    cbb_names = [s.replace("BAM_data#",'') for s in cbb_names]
+    cbb.obs.index = cbb_names
+    
+    
     # if the transformation file of given name exist, perform transformation step
     if trans_dir != None:
         trans_file_path = trans_dir / trans_filename
