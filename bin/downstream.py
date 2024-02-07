@@ -16,6 +16,7 @@ def main(muon_dir: Path):
     rna_expr.X = rna_expr.layers["spliced"]
     print(rna_expr)
     atac_cbg_expr = expr["atac_cell_by_gene"]
+    atac_cbb_expr = expr["atac_cell_by_bin"]
     print("Construct muon object with RNA and ATAC cell-by-gene data.")
     mdata_raw = mu.MuData({"rna": rna_expr, "atac_cbg": atac_cbg_expr})
     print(mdata_raw)
@@ -31,6 +32,11 @@ def main(muon_dir: Path):
 
     #ATAC TFIDF normalization
     mu.atac.pp.tfidf(mdata_ataccbg, scale_factor=1e4)
+
+    #find highly variable genes for ATAC
+    sc.pp.highly_variable_genes(mdata_ataccbg, min_mean=0.02, max_mean=4, min_disp=0.5)
+    print("Found", np.sum(mdata_ataccbg.var.highly_variable), "highly variable genes in ATAC-seq.")
+
     
     ## Downstream analysis for Atac
     print("Performing downstream analysis for ATAC...")
@@ -54,9 +60,9 @@ def main(muon_dir: Path):
     ## Downstream analysis for RNA
     print("Performing downstream analysis for RNA...")
 
-    # find highly variable genes
+    # find highly variable genes for RNA-seq
     sc.pp.highly_variable_genes(mdata_rna, min_mean=0.02, max_mean=4, min_disp=0.5)
-    print("Found", np.sum(mdata_rna.var.highly_variable), "highly variable genes.")
+    print("Found", np.sum(mdata_rna.var.highly_variable), "highly variable genes in RNA-seq.")
 
     # scaling the data
     # save log-normalised counts
@@ -93,8 +99,6 @@ def main(muon_dir: Path):
     print(mdata_raw)
     mdata_raw.write("citeseq_normalized.h5mu")
     ## Multi-omics factor analysis
-    mdata_ataccbg.var["highly_variable"] = True
-    mdata_raw.update()
     mu.tl.mofa(mdata_raw, outfile="multiome_mofa.hdf5", n_factors=30)
 
     # multiplex clustering
@@ -109,6 +113,10 @@ def main(muon_dir: Path):
         sc.pl.umap(mdata_raw, color="leiden_wnn", legend_loc="on data")
         plt.savefig("leiden_cluster_combined.pdf")
 
+    #add the cellbybin data back for output
+    mdata_raw.mod['atac_cbb'] = atac_cbb_expr
+
+        
     mdata_raw.write("multiome_downstream.h5mu")
 
 
