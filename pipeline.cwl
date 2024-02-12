@@ -56,6 +56,10 @@ outputs:
     outputSource: downstream_analysis/rna_embedding
     type: File
     label: "Leiden clustering result on rna modality"
+  atac_embedding_result:
+    ouputSource: downstream_analysis/atac_embedding
+    type: File
+    label: "Leiden clustering result on atac modality"
   joint_embedding_result:
     outputSource: downstream_analysis/joint_embedding
     type: File
