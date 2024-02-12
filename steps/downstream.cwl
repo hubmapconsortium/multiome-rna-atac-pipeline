@@ -16,7 +16,7 @@ outputs:
   muon_processed:
     type: File
     outputBinding:
-      glob: "multiome_normalized.h5mu"
+      glob: "multiome_downstream.h5mu"
   mofa_out:
     type: File
     outputBinding:
@@ -25,4 +25,12 @@ outputs:
     type: File
     outputBinding:
       glob: "leiden_cluster_combined.pdf"
+  rna_embedding:
+    type: File
+    outputBinding:
+      glob: "leiden_cluster_rna.pdf"
+  atac_embedding:
+    type: File
+    outputBinding:
+      glob: "leiden_cluster_atac.pdf"
   
