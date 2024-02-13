@@ -97,7 +97,7 @@ def main(muon_dir: Path):
     # # if we filter the cells at the RNA QC step, subset them in the protein modality
     # mu.pp.intersect_obs(mdata_raw)
     print(mdata_raw)
-    mdata_raw.write("citeseq_normalized.h5mu")
+    mdata_raw.write("multiome_normalized.h5mu")
     ## Multi-omics factor analysis
     mu.tl.mofa(mdata_raw, outfile="multiome_mofa.hdf5", n_factors=30)
 
