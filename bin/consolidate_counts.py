@@ -2,11 +2,38 @@
 from argparse import ArgumentParser
 from os.path import exists
 from pathlib import Path
+from typing import Dict
 
+import json
 import muon as mu
 import pandas as pd
 import scanpy as sc
+from fastq_utils import smart_open
+from anndata import AnnData
 
+DATA_PATH = Path("/opt/data")
+DEFAULT_HUGO_ENSEMBL_MAPPING_PATH = DATA_PATH / "ensembl_hugo_mapping.json.xz"
+
+class EnsemblHugoMapper:
+    mapping: Dict[str, str]
+
+    def __init__(self):
+        self.mapping = {}
+
+    @classmethod
+    def populate(cls, path: Path):
+        self = cls()
+        with smart_open(path) as f:
+            self.mapping.update(json.load(f))
+        return self
+
+    def annotate(self, data: AnnData):
+
+        symbols = [self.mapping.get(e) for e in data.var.index]
+        data.var.loc[
+            :,
+            "hugo_symbol",
+        ] = symbols
 
 def generate_barcode_dict():
     #colnames = ["transformed", "original"]
@@ -44,6 +71,10 @@ def main(
     rna_name = list(rna_expr.obs_names)
     cbb = mu.read(str(atac_cell_by_bin))
     cbg = mu.read(str(atac_cell_by_gene))
+
+    ensembl_hugo_mapper = EnsemblHugoMapper.populate(DEFAULT_HUGO_ENSEMBL_MAPPING_PATH)
+
+    ensembl_hugo_mapper.annotate(cbg)
 
     #get rid of the BAM_data# artifact from ArchR in the atac-seq data
     cbg_names = list(cbg.obs_names)

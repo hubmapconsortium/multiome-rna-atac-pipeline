@@ -19,6 +19,7 @@ RUN python3 -m pip install -U pip setuptools wheel \
 
 RUN mkdir /out
 
+COPY data /opt/data
 COPY bin /opt
 COPY barcodes/*.txt /opt
 RUN chmod -R +rwx /opt
