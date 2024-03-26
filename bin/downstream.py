@@ -48,7 +48,7 @@ def main(muon_dir: Path):
         mdata_ataccbg.obs.loc[:, f"neighbor_counts_ax{axis}"] = neighbor_counts
         cells_with_neighbors = (neighbor_counts > 0).astype(int)
         mdata_ataccbg.obs.loc[:, f"has_neighbors_ax{axis}"] = cells_with_neighbors
-    mdata_ataccbg.obs.loc[:, "has_neighbors"] = mdata_adt.obs.loc[:, "has_neighbors_ax1"]
+    mdata_ataccbg.obs.loc[:, "has_neighbors"] = mdata_ataccbg.obs.loc[:, "has_neighbors_ax1"]
     mu.pp.filter_obs(mdata_ataccbg, "has_neighbors", lambda x: x > 0)
 
     sc.tl.leiden(mdata_ataccbg)
@@ -95,7 +95,7 @@ def main(muon_dir: Path):
     ## Multi-omics integration
     mdata_raw.update()
     # # if we filter the cells at the RNA QC step, subset them in the protein modality
-    # mu.pp.intersect_obs(mdata_raw)
+    mu.pp.intersect_obs(mdata_raw)
     print(mdata_raw)
     mdata_raw.write("multiome_normalized.h5mu")
     ## Multi-omics factor analysis
@@ -117,7 +117,7 @@ def main(muon_dir: Path):
     mdata_raw.mod['atac_cbb'] = atac_cbb_expr
 
         
-    mdata_raw.write("multiome_downstream.h5mu")
+    mdata_raw.write("secondary_analysis.h5mu")
 
 
 if __name__ == "__main__":
