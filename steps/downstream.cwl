@@ -16,7 +16,7 @@ outputs:
   muon_processed:
     type: File
     outputBinding:
-      glob: "multiome_downstream.h5mu"
+      glob: "secondary_analysis.h5mu"
   mofa_out:
     type: File
     outputBinding:

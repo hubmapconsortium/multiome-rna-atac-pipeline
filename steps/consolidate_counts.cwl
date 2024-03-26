@@ -22,16 +22,11 @@ inputs:
     inputBinding:
       position: 2
       prefix: "--atac_cell_by_gene"
-  transformation_dir:
-    type: Directory?
+  assay:
+    type: string
     inputBinding:
       position: 3
-      prefix: "--trans_dir"
-  transformation_filename:
-    type: string?
-    inputBinding:
-      position: 4
-      prefix: "--trans_filename"
+      prefix: "--assay"
 outputs:
   muon_dir:
     type: File

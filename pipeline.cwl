@@ -14,12 +14,9 @@ inputs:
   fastq_dir_atac:
     label: "Directory containing ATAC-seq FASTQ files"
     type: Directory[]
-  assay_rna:
-    label: "scRNA-seq assay"
-    type: string
-  assay_atac:
-    label: "scATAC-seq assay"
-    type: string
+  assay:
+     label: "Assay"
+     type: string
   threads_rna:
     label: "Number of threads for Salmon"
     type: int
@@ -31,12 +28,6 @@ inputs:
     type: int?
   keep_all_barcodes:
     type: boolean?
-  trans_dir:
-    label: "Directory of barcode transformation mapping file for feature barcoding protocol use TotalSeq B or C"
-    type: Directory?
-  trans_filename:
-    label: "Filename of barcode transformation mapping file for feature barcoding protocol use TotalSeq B or C"
-    type: string?
   exclude_bam:
     type: boolean?
 outputs:
@@ -57,7 +48,7 @@ outputs:
     type: File
     label: "Leiden clustering result on rna modality"
   atac_embedding_result:
-    ouputSource: downstream_analysis/atac_embedding
+    outputSource: downstream_analysis/atac_embedding
     type: File
     label: "Leiden clustering result on atac modality"
   joint_embedding_result:
@@ -70,7 +61,7 @@ steps:
       fastq_dir:
         source: fastq_dir_rna
       assay:
-        source: assay_rna
+        source: assay
       threads:
         source: threads_rna
       expected_cell_count:
@@ -88,7 +79,7 @@ steps:
       sequence_directory:
         source: fastq_dir_atac
       assay:
-        source: assay_atac
+        source: assay
       threads:
         source: threads_atac
       exclude_bam:
@@ -108,12 +99,9 @@ steps:
       cell_by_gene_matrix_h5ad_atac:
         source:
           atac_quantification/cell_by_gene_h5ad
-      transformation_dir:
+      assay:
         source:
-          trans_dir
-      transformation_filename:
-        source:
-          trans_filename
+          assay
     out: [muon_dir]
     run: steps/consolidate_counts.cwl
   downstream_analysis:
@@ -125,4 +113,6 @@ steps:
       - muon_processed
       - mofa_out
       - joint_embedding
+      - rna_embedding
+      - atac_embedding
     run: steps/downstream.cwl
