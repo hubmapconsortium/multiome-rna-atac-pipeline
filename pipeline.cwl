@@ -87,6 +87,7 @@ steps:
     out:
       - cell_by_bin_h5ad
       - cell_by_gene_h5ad
+      - genome_build_json
     run: sc-atac-seq-pipeline/sc_atac_seq_prep_process_analyze.cwl
   consolidate_counts:
     in:
@@ -99,6 +100,12 @@ steps:
       cell_by_gene_matrix_h5ad_atac:
         source:
           atac_quantification/cell_by_gene_h5ad
+      rna_genome_build_path:
+        source:
+          rna_quantification/genome_build_json
+      atac_genome_build_path:
+        source:
+          atac_quantification/genome_build_json
       assay:
         source:
           assay

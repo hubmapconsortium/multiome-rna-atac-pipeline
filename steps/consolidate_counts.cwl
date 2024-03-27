@@ -22,10 +22,20 @@ inputs:
     inputBinding:
       position: 2
       prefix: "--atac_cell_by_gene"
+  rna_genome_build_path:
+    type: File
+    inputBinding:
+      position: 3
+      prefix: "--rna_genome_build_path"
+  atac_genome_build_path:
+    type: File
+    inputBinding:
+      position: 4
+      prefix: "--atac_genome_build_path"
   assay:
     type: string
     inputBinding:
-      position: 3
+      position: 5
       prefix: "--assay"
 outputs:
   muon_dir:

@@ -6,7 +6,7 @@ from pathlib import Path
 import muon as mu
 import pandas as pd
 import scanpy as sc
-
+import json
 
 def generate_barcode_dict():
     #colnames = ["transformed", "original"]
@@ -38,12 +38,24 @@ def main(
     rna_file: Path,
     atac_cell_by_bin: Path,
     atac_cell_by_gene: Path,
+    rna_genome_build_path: Path,
+    atac_genome_build_path: Path,
     assay: str,
 ):
     rna_expr = mu.read(str(rna_file))
     rna_name = list(rna_expr.obs_names)
     cbb = mu.read(str(atac_cell_by_bin))
     cbg = mu.read(str(atac_cell_by_gene))
+
+    with open(rna_genome_build_path) as f:
+        rna_genome_build_info = json.load(f)
+
+    with open(atac_genome_build_path) as f:
+        atac_genome_build_info = json.load(f)
+
+    rna_expr.uns['genome_build'] = rna_genome_build_info
+    cbg.uns['genome_build'] = atac_genome_build_info
+    cbb.uns['genome_build'] = atac_genome_build_info
 
     #get rid of the BAM_data# artifact from ArchR in the atac-seq data
     cbg_names = list(cbg.obs_names)
@@ -84,6 +96,8 @@ if __name__ == "__main__":
     p.add_argument("--rna_file", type=Path)
     p.add_argument("--atac_cell_by_bin", type=Path)
     p.add_argument("--atac_cell_by_gene", type=Path)
+    p.add_argument("--rna_genome_build_path", type=Path)
+    p.add_argument("--atac_genome_build_path", type=Path)
     p.add_argument("--assay", type=str)
 
     args = p.parse_args()
@@ -92,5 +106,7 @@ if __name__ == "__main__":
         args.rna_file,
         args.atac_cell_by_bin,
         args.atac_cell_by_gene,
+        args.rna_genome_build_path,
+        args.atac_genome_build_path,
         args.assay,
     )
