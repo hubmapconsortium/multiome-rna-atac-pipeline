@@ -4,33 +4,48 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import muon as mu
-import pandas as pd
+from anndata import AnnData
+
+from utils import Assay
+
+DATA_DIR = Path("/data")
 
 
-def generate_barcode_dict():
-    # colnames = ["transformed", "original"]
-    # trans_info = pd.read_csv(directory, sep="\t", header=None, names=colnames)
-
-    atac_barcodes_file = "/opt/atac_barcodes.txt"
-    rna_barcodes_file = "/opt/cellranger_barcodes.txt"
-    atac_barcodes = pd.read_csv(atac_barcodes_file, sep="\n", header=None)
-    rna_barcodes = pd.read_csv(rna_barcodes_file, sep="\n", header=None)
+def generate_barcode_dict() -> dict[str, str]:
+    with open(DATA_DIR / "atac_barcodes.txt") as f:
+        atac_barcodes = [line.strip() for line in f]
+    with open(DATA_DIR / "cellranger_barcodes.txt") as f:
+        rna_barcodes = [line.strip() for line in f]
+    assert len(atac_barcodes) == len(rna_barcodes)
 
     barcode_dict = dict(zip(atac_barcodes, rna_barcodes))
-    print("Generated ", len(barcode_dict), " key-value pairs for RNA barcode transformation.")
+    print("Read", len(barcode_dict), "key-value pairs for ATAC-seq barcode transformation.")
     return barcode_dict
 
 
-def transform_rna_barcode(barcode_dict: Path, rna_name: list):
-    count = 0
-    for i in range(len(rna_name)):
-        barcode = rna_name[i]
-        if barcode not in barcode_dict:
-            count += 1
-            continue
-        else:
-            rna_name[i] = barcode_dict[barcode]
-    return rna_name, count
+def drop_bam_data_obs_index_prefix(adata: AnnData):
+    """
+    Operates on adata in place. This is a separate function to reduce the
+    possibility of copy/paste problems when applying this to multiple
+    AnnData objects.
+
+    :param adata:
+    """
+    adj_names = [s.removeprefix("BAM_data#") for s in adata.obs.index]
+    adata.obs.index = adj_names
+
+
+def map_atac_barcodes(adata: AnnData, barcode_mapping: dict[str, str]):
+    """
+    Operates on adata in place. This is a separate function to reduce the
+    possibility of copy/paste problems when applying this to multiple
+    AnnData objects.
+
+    :param adata:
+    :param barcode_mapping:
+    """
+    mapped_barcodes = [barcode_mapping[b] for b in adata.obs.index]
+    adata.obs.index = mapped_barcodes
 
 
 def main(
@@ -39,12 +54,11 @@ def main(
     atac_cell_by_gene: Path,
     rna_genome_build_path: Path,
     atac_genome_build_path: Path,
-    assay_atac: str,
+    assay_atac: Assay,
 ):
-    rna_expr = mu.read(str(rna_file))
-    rna_name = list(rna_expr.obs_names)
-    cbb = mu.read(str(atac_cell_by_bin))
-    cbg = mu.read(str(atac_cell_by_gene))
+    rna_expr = mu.read(rna_file)
+    cbb = mu.read(atac_cell_by_bin)
+    cbg = mu.read(atac_cell_by_gene)
 
     with open(rna_genome_build_path) as f:
         rna_genome_build_info = json.load(f)
@@ -57,26 +71,14 @@ def main(
     cbb.uns["genome_build"] = atac_genome_build_info
 
     # get rid of the BAM_data# artifact from ArchR in the atac-seq data
-    cbg_names = list(cbg.obs_names)
-    cbg_names = [s.replace("BAM_data#", "") for s in cbg_names]
-    cbg.obs.index = cbg_names
+    drop_bam_data_obs_index_prefix(cbg)
+    drop_bam_data_obs_index_prefix(cbb)
 
-    cbb_names = list(cbb.obs_names)
-    cbb_names = [s.replace("BAM_data#", "") for s in cbb_names]
-    cbb.obs.index = cbb_names
-
-    if assay_atac == "multiome_10x":
+    if assay_atac == Assay.MULTIOME_10X:
         print("Performing transformation step of the cellular barcodes of RNA...")
-        barcode_dict = generate_barcode_dict(trans_file_path)
-        rna_expr.obs.index, count = transform_rna_barcode(barcode_dict, rna_name)
-        rna_name = list(rna_expr.obs_names)
-        print(
-            "A total of",
-            count,
-            "out of",
-            len(rna_name),
-            "RNA cell barcodes were not found in RNA barcode transformation dictionary.",
-        )
+        barcode_dict = generate_barcode_dict()
+        map_atac_barcodes(cbg, barcode_dict)
+        map_atac_barcodes(cbb, barcode_dict)
 
     # print("There are", len(common_cells), "common cells in RNA and Atac experiments.")
     mdata = mu.MuData({"rna": rna_expr, "atac_cell_by_bin": cbb, "atac_cell_by_gene": cbg})
@@ -97,7 +99,7 @@ if __name__ == "__main__":
     p.add_argument("--atac_cell_by_gene", type=Path)
     p.add_argument("--rna_genome_build_path", type=Path)
     p.add_argument("--atac_genome_build_path", type=Path)
-    p.add_argument("--assay_atac", type=str)
+    p.add_argument("--assay_atac", choices=list(Assay), type=Assay)
 
     args = p.parse_args()
 

@@ -17,8 +17,8 @@ RUN python3 -m pip install -U pip setuptools wheel \
  && python3 -m pip install -r /opt/requirements.txt \
  && rm -rf /root/.cache/pip
 
-RUN mkdir /out
+RUN mkdir /out /data
 
 COPY bin /opt
-COPY barcodes/*.txt /opt/
+COPY barcodes/*.txt /data/
 RUN chmod -R +rwx /opt
