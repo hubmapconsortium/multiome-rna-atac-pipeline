@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
+import json
 from argparse import ArgumentParser
-from os.path import exists
 from pathlib import Path
 
 import muon as mu
 import pandas as pd
-import scanpy as sc
-import json
+
 
 def generate_barcode_dict():
-    #colnames = ["transformed", "original"]
-    #trans_info = pd.read_csv(directory, sep="\t", header=None, names=colnames)
+    # colnames = ["transformed", "original"]
+    # trans_info = pd.read_csv(directory, sep="\t", header=None, names=colnames)
 
     atac_barcodes_file = "/opt/atac_barcodes.txt"
     rna_barcodes_file = "/opt/cellranger_barcodes.txt"
@@ -40,7 +39,7 @@ def main(
     atac_cell_by_gene: Path,
     rna_genome_build_path: Path,
     atac_genome_build_path: Path,
-    assay: str,
+    assay_atac: str,
 ):
     rna_expr = mu.read(str(rna_file))
     rna_name = list(rna_expr.obs_names)
@@ -53,20 +52,20 @@ def main(
     with open(atac_genome_build_path) as f:
         atac_genome_build_info = json.load(f)
 
-    rna_expr.uns['genome_build'] = rna_genome_build_info
-    cbg.uns['genome_build'] = atac_genome_build_info
-    cbb.uns['genome_build'] = atac_genome_build_info
+    rna_expr.uns["genome_build"] = rna_genome_build_info
+    cbg.uns["genome_build"] = atac_genome_build_info
+    cbb.uns["genome_build"] = atac_genome_build_info
 
-    #get rid of the BAM_data# artifact from ArchR in the atac-seq data
+    # get rid of the BAM_data# artifact from ArchR in the atac-seq data
     cbg_names = list(cbg.obs_names)
-    cbg_names = [s.replace("BAM_data#",'') for s in cbg_names]
+    cbg_names = [s.replace("BAM_data#", "") for s in cbg_names]
     cbg.obs.index = cbg_names
 
     cbb_names = list(cbb.obs_names)
-    cbb_names = [s.replace("BAM_data#",'') for s in cbb_names]
+    cbb_names = [s.replace("BAM_data#", "") for s in cbb_names]
     cbb.obs.index = cbb_names
-    
-    if(assay=="multiome_10x"):
+
+    if assay_atac == "multiome_10x":
         print("Performing transformation step of the cellular barcodes of RNA...")
         barcode_dict = generate_barcode_dict(trans_file_path)
         rna_expr.obs.index, count = transform_rna_barcode(barcode_dict, rna_name)
@@ -98,7 +97,7 @@ if __name__ == "__main__":
     p.add_argument("--atac_cell_by_gene", type=Path)
     p.add_argument("--rna_genome_build_path", type=Path)
     p.add_argument("--atac_genome_build_path", type=Path)
-    p.add_argument("--assay", type=str)
+    p.add_argument("--assay_atac", type=str)
 
     args = p.parse_args()
 
@@ -108,5 +107,5 @@ if __name__ == "__main__":
         args.atac_cell_by_gene,
         args.rna_genome_build_path,
         args.atac_genome_build_path,
-        args.assay,
+        args.assay_atac,
     )

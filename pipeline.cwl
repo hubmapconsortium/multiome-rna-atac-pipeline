@@ -14,8 +14,11 @@ inputs:
   fastq_dir_atac:
     label: "Directory containing ATAC-seq FASTQ files"
     type: Directory[]
-  assay:
-     label: "Assay"
+  assay_rna:
+     label: "RNA-seq assay"
+     type: string
+  assay_atac:
+     label: "ATAC-seq assay"
      type: string
   threads_rna:
     label: "Number of threads for Salmon"
@@ -61,7 +64,7 @@ steps:
       fastq_dir:
         source: fastq_dir_rna
       assay:
-        source: assay
+        source: assay_rna
       threads:
         source: threads_rna
       expected_cell_count:
@@ -79,7 +82,7 @@ steps:
       sequence_directory:
         source: fastq_dir_atac
       assay:
-        source: assay
+        source: assay_atac
       threads:
         source: threads_atac
       exclude_bam:
@@ -106,9 +109,9 @@ steps:
       atac_genome_build_path:
         source:
           atac_quantification/genome_build_json
-      assay:
+      assay_atac:
         source:
-          assay
+          assay_atac
     out: [muon_dir]
     run: steps/consolidate_counts.cwl
   downstream_analysis:

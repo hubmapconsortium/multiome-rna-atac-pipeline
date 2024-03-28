@@ -7,6 +7,7 @@ import muon as mu
 import numpy as np
 import scanpy as sc
 from muon import prot as pt
+
 from plot_utils import new_plot
 
 
@@ -30,14 +31,13 @@ def main(muon_dir: Path):
     sc.pp.normalize_total(mdata_rna, target_sum=1e4)
     sc.pp.log1p(mdata_rna)
 
-    #ATAC TFIDF normalization
+    # ATAC TFIDF normalization
     mu.atac.pp.tfidf(mdata_ataccbg, scale_factor=1e4)
 
-    #find highly variable genes for ATAC
+    # find highly variable genes for ATAC
     sc.pp.highly_variable_genes(mdata_ataccbg, min_mean=0.02, max_mean=4, min_disp=0.5)
     print("Found", np.sum(mdata_ataccbg.var.highly_variable), "highly variable genes in ATAC-seq.")
 
-    
     ## Downstream analysis for Atac
     print("Performing downstream analysis for ATAC...")
     sc.tl.pca(mdata_ataccbg)
@@ -113,10 +113,9 @@ def main(muon_dir: Path):
         sc.pl.umap(mdata_raw, color="leiden_wnn", legend_loc="on data")
         plt.savefig("leiden_cluster_combined.pdf")
 
-    #add the cellbybin data back for output
-    mdata_raw.mod['atac_cbb'] = atac_cbb_expr
+    # add the cellbybin data back for output
+    mdata_raw.mod["atac_cbb"] = atac_cbb_expr
 
-        
     mdata_raw.write("secondary_analysis.h5mu")
 
 
