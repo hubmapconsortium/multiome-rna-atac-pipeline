@@ -1,9 +1,9 @@
 cwlVersion: v1.1
 class: CommandLineTool
-label: Downstream analysis for RNA and ATAC 
+label: Downstream analysis for RNA and ATAC
 requirements:
   DockerRequirement:
-      dockerPull: hubmap/multiome_analysis:latest
+      dockerPull: hubmap/multiome_analysis:1.0
 baseCommand: /opt/downstream.py
 
 inputs:
@@ -33,4 +33,4 @@ outputs:
     type: File
     outputBinding:
       glob: "leiden_cluster_atac.pdf"
-  
+
