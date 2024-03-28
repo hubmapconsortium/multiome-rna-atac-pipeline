@@ -15,11 +15,11 @@ inputs:
     label: "Directory containing ATAC-seq FASTQ files"
     type: Directory[]
   assay_rna:
-    label: "scRNA-seq assay"
-    type: string
+     label: "RNA-seq assay"
+     type: string
   assay_atac:
-    label: "scATAC-seq assay"
-    type: string
+     label: "ATAC-seq assay"
+     type: string
   threads_rna:
     label: "Number of threads for Salmon"
     type: int
@@ -31,12 +31,6 @@ inputs:
     type: int?
   keep_all_barcodes:
     type: boolean?
-  trans_dir:
-    label: "Directory of barcode transformation mapping file for feature barcoding protocol use TotalSeq B or C"
-    type: Directory?
-  trans_filename:
-    label: "Filename of barcode transformation mapping file for feature barcoding protocol use TotalSeq B or C"
-    type: string?
   exclude_bam:
     type: boolean?
 outputs:
@@ -44,22 +38,26 @@ outputs:
     outputSource: consolidate_counts/muon_dir
     type: File
     label: "Consolidated expression cell-by-gene, cell-by-bin"
- # muon_processed_h5mu:
- #   outputSource: downstream_analysis/muon_processed
- #   type: File
- #   label: "Processed version of raw expression for each modality"
- # mofa_model:
- #   outputSource: downstream_analysis/mofa_out
- #   type: File
- #   label: "Multi-omics factor analysis model"
-#  rna_embedding_result:
-#    outputSource: downstream_analysis/rna_embedding
-#    type: File
-#    label: "Leiden clustering result on rna modality"
- # joint_embedding_result:
- #   outputSource: downstream_analysis/joint_embedding
- #   type: File
- #   label: "Leiden clustering result on joint modality"
+  muon_processed_h5mu:
+    outputSource: downstream_analysis/muon_processed
+    type: File
+    label: "Processed version of raw expression for each modality"
+  mofa_model:
+    outputSource: downstream_analysis/mofa_out
+    type: File
+    label: "Multi-omics factor analysis model"
+  rna_embedding_result:
+    outputSource: downstream_analysis/rna_embedding
+    type: File
+    label: "Leiden clustering result on rna modality"
+  atac_embedding_result:
+    outputSource: downstream_analysis/atac_embedding
+    type: File
+    label: "Leiden clustering result on atac modality"
+  joint_embedding_result:
+    outputSource: downstream_analysis/joint_embedding
+    type: File
+    label: "Leiden clustering result on joint modality"
 steps:
   rna_quantification:
     in:
@@ -92,6 +90,7 @@ steps:
     out:
       - cell_by_bin_h5ad
       - cell_by_gene_h5ad
+      - genome_build_json
     run: sc-atac-seq-pipeline/sc_atac_seq_prep_process_analyze.cwl
   consolidate_counts:
     in:
@@ -104,21 +103,26 @@ steps:
       cell_by_gene_matrix_h5ad_atac:
         source:
           atac_quantification/cell_by_gene_h5ad
-      transformation_dir:
+      rna_genome_build_path:
         source:
-          trans_dir
-      transformation_filename:
+          rna_quantification/genome_build_json
+      atac_genome_build_path:
         source:
-          trans_filename
+          atac_quantification/genome_build_json
+      assay_atac:
+        source:
+          assay_atac
     out: [muon_dir]
     run: steps/consolidate_counts.cwl
-#  downstream_analysis:
-#    in:
-#      muon_dir:
-#        source:
-#          consolidate_counts/muon_dir
-#    out:
-#      - muon_processed
-#      - mofa_out
-#      - joint_embedding
-#    run: steps/downstream.cwl
+  downstream_analysis:
+    in:
+      muon_dir:
+        source:
+          consolidate_counts/muon_dir
+    out: 
+      - muon_processed
+      - mofa_out
+      - joint_embedding
+      - rna_embedding
+      - atac_embedding
+    run: steps/downstream.cwl

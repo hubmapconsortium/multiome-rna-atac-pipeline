@@ -4,4 +4,5 @@ scipy
 anndata
 muon
 leidenalg
-mofapy2
+git+https://github.com/hubmapconsortium/mofapy2.git
+scanpy==1.9.6

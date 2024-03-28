@@ -1,9 +1,9 @@
 cwlVersion: v1.1
 class: CommandLineTool
-label: Downstream analysis for RNA and ADT
+label: Downstream analysis for RNA and ATAC 
 requirements:
   DockerRequirement:
-      dockerPull: hubmap/citeseq_analysis:latest
+      dockerPull: hubmap/multiome_analysis:latest
 baseCommand: /opt/downstream.py
 
 inputs:
@@ -16,7 +16,7 @@ outputs:
   muon_processed:
     type: File
     outputBinding:
-      glob: "multiome_normalized.h5mu"
+      glob: "secondary_analysis.h5mu"
   mofa_out:
     type: File
     outputBinding:
@@ -25,4 +25,12 @@ outputs:
     type: File
     outputBinding:
       glob: "leiden_cluster_combined.pdf"
-
+  rna_embedding:
+    type: File
+    outputBinding:
+      glob: "leiden_cluster_rna.pdf"
+  atac_embedding:
+    type: File
+    outputBinding:
+      glob: "leiden_cluster_atac.pdf"
+  
