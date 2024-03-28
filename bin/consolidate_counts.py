@@ -75,7 +75,7 @@ def main(
     drop_bam_data_obs_index_prefix(cbb)
 
     if assay_atac == Assay.MULTIOME_10X:
-        print("Performing transformation step of the cellular barcodes of RNA...")
+        print("Performing transformation step of the cellular barcodes of ATAC-seq")
         barcode_dict = generate_barcode_dict()
         map_atac_barcodes(cbg, barcode_dict)
         map_atac_barcodes(cbb, barcode_dict)
@@ -86,7 +86,7 @@ def main(
     print(
         "Saving MuData filtered by",
         len(mdata),
-        "common cells in RNA and Atac experiments...",
+        "common cells in RNA and ATAC experiments",
     )
 
     mdata.write("mudata_raw.h5mu")
