@@ -32,11 +32,11 @@ inputs:
     inputBinding:
       position: 4
       prefix: "--atac_genome_build_path"
-  assay:
+  assay_atac:
     type: string
     inputBinding:
       position: 5
-      prefix: "--assay"
+      prefix: "--assay_atac"
 outputs:
   muon_dir:
     type: File
