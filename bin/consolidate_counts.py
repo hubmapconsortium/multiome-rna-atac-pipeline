@@ -12,7 +12,7 @@ DATA_DIR = Path("/data")
 
 
 def generate_barcode_dict() -> dict[str, str]:
-    with open(DATA_DIR / "atac_barcodes.txt") as f:
+    with open(DATA_DIR / "atac_barcodes_rev.txt") as f:
         atac_barcodes = [line.strip() for line in f]
     with open(DATA_DIR / "cellranger_barcodes.txt") as f:
         rna_barcodes = [line.strip() for line in f]
@@ -60,9 +60,9 @@ def main(
     atac_genome_build_path: Path,
     assay_atac: Assay,
 ):
-    rna_expr = mu.read(rna_file)
-    cbb = mu.read(atac_cell_by_bin)
-    cbg = mu.read(atac_cell_by_gene)
+    rna_expr = mu.read(str(rna_file))
+    cbb = mu.read(str(atac_cell_by_bin))
+    cbg = mu.read(str(atac_cell_by_gene))
 
     with open(rna_genome_build_path) as f:
         rna_genome_build_info = json.load(f)
