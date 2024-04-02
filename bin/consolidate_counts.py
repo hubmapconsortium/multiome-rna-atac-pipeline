@@ -35,17 +35,21 @@ def drop_bam_data_obs_index_prefix(adata: AnnData):
     adata.obs.index = adj_names
 
 
-def map_atac_barcodes(adata: AnnData, barcode_mapping: dict[str, str]):
+def map_atac_barcodes(adata: AnnData, barcode_mapping: dict[str, str]) -> AnnData:
     """
-    Operates on adata in place. This is a separate function to reduce the
-    possibility of copy/paste problems when applying this to multiple
-    AnnData objects.
+    This is a separate function to reduce the possibility of copy/paste
+    problems when applying this to multiple AnnData objects. Does not
+    operate in place since we might return a subset of `adata` if not
+    all barcodes are present in `barcode_mapping`.
 
     :param adata:
     :param barcode_mapping:
     """
+    selection = [b in barcode_mapping for b in adata.obs.index]
+    adata = adata[selection, :]
     mapped_barcodes = [barcode_mapping[b] for b in adata.obs.index]
     adata.obs.index = mapped_barcodes
+    return adata.copy()
 
 
 def main(
@@ -77,8 +81,8 @@ def main(
     if assay_atac == Assay.MULTIOME_10X:
         print("Performing transformation step of the cellular barcodes of ATAC-seq")
         barcode_dict = generate_barcode_dict()
-        map_atac_barcodes(cbg, barcode_dict)
-        map_atac_barcodes(cbb, barcode_dict)
+        cbg = map_atac_barcodes(cbg, barcode_dict)
+        cbb = map_atac_barcodes(cbb, barcode_dict)
 
     # print("There are", len(common_cells), "common cells in RNA and Atac experiments.")
     mdata = mu.MuData({"rna": rna_expr, "atac_cell_by_bin": cbb, "atac_cell_by_gene": cbg})
