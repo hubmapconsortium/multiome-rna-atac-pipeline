@@ -1,35 +1,35 @@
 [
     {
-	"pattern": "mudata_raw\\.h5mu",
-	"description": "The raw output from the ATAC-seq and RNA-seq pipelines combined into a MuData object, readable with the muon package"
-	"edam_ontology_term": "EDAM_1.24.format_3590",
-	"is_data_product": true
+        "pattern": "mudata_raw\\.h5mu",
+        "description": "The raw output from the ATAC-seq and RNA-seq pipelines combined into a MuData object, readable with the muon package",
+        "edam_ontology_term": "EDAM_1.24.format_3590",
+        "is_data_product": true
     },
     {
-	"pattern": "secondary_analysis.\\h5mu",
-	"description": "The processed data for each modality with the combined analysis as a MuData object, readable with the muon package"
-	"edam_ontology_term": "EDAM_1.24.format_3590",
-	"is_data_product": true
+        "pattern": "secondary_analysis.\\h5mu",
+        "description": "The processed data for each modality with the combined analysis as a MuData object, readable with the muon package",
+        "edam_ontology_term": "EDAM_1.24.format_3590",
+        "is_data_product": true
     },
     {
-	"pattern": "multiome_mofa\\.hdf5",
-	"description": "Multifactor analysis of combined modalities",
-	"edam_ontology_term": "EDAM_1.24.format_3590",
-	"is_data_product":  true
+        "pattern": "multiome_mofa\\.hdf5",
+        "description": "Multifactor analysis of combined modalities",
+        "edam_ontology_term": "EDAM_1.24.format_3590",
+        "is_data_product": true
     },
     {
-	"pattern": "leiden_cluster_rna\\.pdf",
-	"description": "UMAP plot of cells for RNA-seq modality only, colored by Leiden cluster ID",
-	"edam_ontology_term": "EDAM_1.24.format_3508"
+        "pattern": "leiden_cluster_rna\\.pdf",
+        "description": "UMAP plot of cells for RNA-seq modality only, colored by Leiden cluster ID",
+        "edam_ontology_term": "EDAM_1.24.format_3508"
     },
     {
-	"pattern": "leiden_cluster_atac\\.pdf",
-	"description": "UMAP plot of cells for ATAC-seq modality only, colored by Leiden cluster ID",
-	"edam_ontology_term": "EDAM_1.24.format_3508"
+        "pattern": "leiden_cluster_atac\\.pdf",
+        "description": "UMAP plot of cells for ATAC-seq modality only, colored by Leiden cluster ID",
+        "edam_ontology_term": "EDAM_1.24.format_3508"
     },
     {
-	"pattern": "leiden_cluster_combined\\.pdf",
-	"description": "UMAP plot of cells for combined modalities after multifactor analysis, colored by Leiden cluster ID",
-	"edam_ontology_term": "EDAM_1.24.format_3508"
+        "pattern": "leiden_cluster_combined\\.pdf",
+        "description": "UMAP plot of cells for combined modalities after multifactor analysis, colored by Leiden cluster ID",
+        "edam_ontology_term": "EDAM_1.24.format_3508"
     }
 ]
