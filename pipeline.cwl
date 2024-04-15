@@ -33,6 +33,8 @@ inputs:
     type: boolean?
   exclude_bam:
     type: boolean?
+  atac_metadata_file:
+    type: File?
 outputs:
   muon_original_h5mu:
     outputSource: consolidate_counts/muon_dir
@@ -87,6 +89,8 @@ steps:
         source: threads_atac
       exclude_bam:
         source: exclude_bam
+      metadata_file:
+        source: atac_metadata_file
     out:
       - cell_by_bin_h5ad
       - cell_by_gene_h5ad
@@ -119,7 +123,7 @@ steps:
       muon_dir:
         source:
           consolidate_counts/muon_dir
-    out:
+    out: 
       - muon_processed
       - mofa_out
       - joint_embedding
