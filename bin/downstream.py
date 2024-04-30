@@ -116,6 +116,8 @@ def main(muon_dir: Path):
     # add the cellbybin data back for output
     mdata_raw.mod["atac_cbb"] = atac_cbb_expr
 
+    #rename columns for visualization
+    data.mod["atac_cbg"].obs["Clusters_from_ArchR"]=data.mod["atac_cbg"].obs["Clusters"]
     mdata_raw.mod["atac_cbg"].obs["Clusters"]=mdata_raw.mod["atac_cbg"].obs["leiden"]
 
     mdata_raw.write("secondary_analysis.h5mu")
