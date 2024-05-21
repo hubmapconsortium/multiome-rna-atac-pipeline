@@ -3,7 +3,7 @@ class: CommandLineTool
 label: Consolidate RNA, ATAC-seq
 requirements:
   DockerRequirement:
-      dockerPull: hubmap/multiome_analysis:latest
+      dockerPull: hubmap/multiome_analysis:1.1.3
 baseCommand: /opt/consolidate_counts.py
 
 inputs:
