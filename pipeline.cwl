@@ -95,7 +95,7 @@ steps:
       - cell_by_bin_h5ad
       - cell_by_gene_h5ad
       - genome_build_json
-    run: sc-atac-seq-pipeline/sc_atac_seq_prep_process_analyze.cwl
+    run: sc-atac-seq-pipeline/steps/sc_atac_seq_prep_process_init.cwl
   consolidate_counts:
     in:
       count_matrix_h5ad_rna:
@@ -123,7 +123,7 @@ steps:
       muon_dir:
         source:
           consolidate_counts/muon_dir
-    out:
+    out: 
       - muon_processed
       - mofa_out
       - joint_embedding
