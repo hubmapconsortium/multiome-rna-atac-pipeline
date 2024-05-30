@@ -37,6 +37,11 @@ inputs:
     inputBinding:
       position: 5
       prefix: "--assay_atac"
+  atac_metadata_file:
+    type: File?
+    inputBinding:
+      position: 6
+      prefix: "--atac_metadata_file"
 outputs:
   muon_dir:
     type: File

@@ -5,14 +5,28 @@ from pathlib import Path
 
 import muon as mu
 from anndata import AnnData
-
+import pandas as pd
 from utils import Assay
+from typing import Optional
+import re
 
 DATA_DIR = Path("/data")
 
+metadata_filename_pattern = re.compile(r"^[0-9A-Fa-f]{32}-metadata.tsv$")
 
-def generate_barcode_dict() -> dict[str, str]:
-    with open(DATA_DIR / "atac_barcodes_rev.txt") as f:
+def find_metadata_file(directory: Path) -> Optional[Path]:
+    """
+    Finds and returns the first metadata file for a HuBMAP data set.
+    Does not check whether the dataset ID (32 hex characters) matches
+    the directory name, nor whether there might be multiple metadata files.
+    """
+    for file_path in directory.iterdir():
+        if metadata_filename_pattern.match(file_path.name):
+            return file_path
+
+def generate_barcode_dict(rev_comp:bool = True) -> dict[str, str]:
+    atac_barcode_path = "atac_barcodes_rev.txt" if rev_comp else "atac_barcodes.txt"
+    with open(DATA_DIR / atac_barcode_path) as f:
         atac_barcodes = [line.strip() for line in f]
     with open(DATA_DIR / "cellranger_barcodes.txt") as f:
         rna_barcodes = [line.strip() for line in f]
@@ -59,6 +73,7 @@ def main(
     rna_genome_build_path: Path,
     atac_genome_build_path: Path,
     assay_atac: Assay,
+    atac_metadata_file: Path=None,
 ):
     rna_expr = mu.read(str(rna_file))
     cbb = mu.read(str(atac_cell_by_bin))
@@ -79,8 +94,15 @@ def main(
     drop_bam_data_obs_index_prefix(cbb)
 
     if assay_atac == Assay.MULTIOME_10X:
+        rev_comp = False
+        if atac_metadata_file:
+            metadata = pd.read_csv(atac_metadata_file)
+            if "barcode_offset" in metadata and metadata["barcode_offset"].isdigit():
+                offset = int(metadata["barcode_offset"])
+                rev_comp = offset == 8
+                print(f"offset is {offset}")
         print("Performing transformation step of the cellular barcodes of ATAC-seq")
-        barcode_dict = generate_barcode_dict()
+        barcode_dict = generate_barcode_dict(rev_comp=rev_comp)
         cbg = map_atac_barcodes(cbg, barcode_dict)
         cbb = map_atac_barcodes(cbb, barcode_dict)
 
@@ -104,6 +126,8 @@ if __name__ == "__main__":
     p.add_argument("--rna_genome_build_path", type=Path)
     p.add_argument("--atac_genome_build_path", type=Path)
     p.add_argument("--assay_atac", choices=list(Assay), type=Assay)
+    p.add_argument("--atac_metadata_file", type=Assay, nargs='?')
+
 
     args = p.parse_args()
 
@@ -114,4 +138,5 @@ if __name__ == "__main__":
         args.rna_genome_build_path,
         args.atac_genome_build_path,
         args.assay_atac,
+        args.atac_metadata_file,
     )
