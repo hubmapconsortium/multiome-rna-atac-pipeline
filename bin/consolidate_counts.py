@@ -94,15 +94,16 @@ def main(
     drop_bam_data_obs_index_prefix(cbb)
 
     if assay_atac == Assay.MULTIOME_10X:
-        rev_comp = False
-        if atac_metadata_file:
-            metadata = pd.read_csv(atac_metadata_file)
-            if "barcode_offset" in metadata and metadata["barcode_offset"].isdigit():
-                offset = int(metadata["barcode_offset"])
-                rev_comp = offset == 8
-                print(f"offset is {offset}")
-        print("Performing transformation step of the cellular barcodes of ATAC-seq")
-        barcode_dict = generate_barcode_dict(rev_comp=rev_comp)
+        barcode_dict = generate_barcode_dict(rev_comp=False)
+        rev_comp_barcode_dict = generate_barcode_dict(rev_comp=True)
+
+        barcode_allow_set = set(barcode_dict.keys())
+        rev_comp_barcode_allow_set = set(rev_comp_barcode_dict.keys())
+        first_thousand_barcodes = set(list(cbg.obs.index)[0:1000])
+
+        rev_comp = (rev_comp_barcode_allow_set & first_thousand_barcodes) > (barcode_allow_set & first_thousand_barcodes)
+        barcode_dict = rev_comp_barcode_dict if rev_comp else barcode_dict
+
         cbg = map_atac_barcodes(cbg, barcode_dict)
         cbb = map_atac_barcodes(cbb, barcode_dict)
 
