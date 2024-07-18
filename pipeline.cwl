@@ -116,6 +116,9 @@ steps:
       assay_atac:
         source:
           assay_atac
+      atac_metadata_file:
+        source:
+          atac_metadata_file
     out: [muon_dir]
     run: steps/consolidate_counts.cwl
   downstream_analysis:
@@ -123,7 +126,7 @@ steps:
       muon_dir:
         source:
           consolidate_counts/muon_dir
-    out:
+    out: 
       - muon_processed
       - mofa_out
       - joint_embedding

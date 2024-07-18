@@ -3,7 +3,7 @@ class: CommandLineTool
 label: Consolidate RNA, ATAC-seq
 requirements:
   DockerRequirement:
-      dockerPull: hubmap/multiome_analysis:1.1.4
+      dockerPull: hubmap/multiome_analysis:latest
 baseCommand: /opt/consolidate_counts.py
 
 inputs:
@@ -37,6 +37,11 @@ inputs:
     inputBinding:
       position: 5
       prefix: "--assay_atac"
+  atac_metadata_file:
+    type: File?
+    inputBinding:
+      position: 6
+      prefix: "--atac_metadata_file"
 outputs:
   muon_dir:
     type: File
