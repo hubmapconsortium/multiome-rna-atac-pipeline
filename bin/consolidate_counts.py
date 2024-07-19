@@ -127,7 +127,7 @@ if __name__ == "__main__":
     p.add_argument("--rna_genome_build_path", type=Path)
     p.add_argument("--atac_genome_build_path", type=Path)
     p.add_argument("--assay_atac", choices=list(Assay), type=Assay)
-    p.add_argument("--atac_metadata_file", type=Assay, nargs='?')
+    p.add_argument("--atac_metadata_file", type=Path, nargs='?')
 
 
     args = p.parse_args()
