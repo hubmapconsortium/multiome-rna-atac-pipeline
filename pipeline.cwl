@@ -60,6 +60,14 @@ outputs:
     outputSource: downstream_analysis/joint_embedding
     type: File
     label: "Leiden clustering result on joint modality"
+  scanpy_qc_results:
+    outputSource: rna_qc/scanpy_qc_results
+    type: File
+    label: "Quality control metrics from Scanpy"
+  qc_report:
+    outputSource: rna_qc/qc_metrics
+    type: File
+    label: "Quality control report in JSON format"
 steps:
   rna_quantification:
     in:
@@ -79,6 +87,7 @@ steps:
       - raw_count_matrix
       - genome_build_json
     run: salmon-rnaseq/steps/salmon-quantification.cwl
+
   atac_quantification:
     in:
       sequence_directory:
@@ -95,7 +104,30 @@ steps:
       - cell_by_bin_h5ad
       - cell_by_gene_h5ad
       - genome_build_json
+      - bam_file
+      - bam_index
+      - image_file
+      - archR_project
     run: sc-atac-seq-pipeline/steps/sc_atac_seq_prep_process_init.cwl
+
+  analyze_with_ArchR:
+    run: sc-atac-seq-pipeline/steps/sc_atac_seq_analyze_steps/archr_clustering.cwl
+    in:
+      image_file: sc_atac_seq_prep_process_init/image_file
+      archr_project: sc_atac_seq_prep_process_init/archr_project
+    out:
+      - peaks_bed
+
+  atac_qc:
+    run: sc-atac-seq-pipeline/steps/qc_measures.cwl
+    in:
+      bam_file: atac_quantification/bam_file
+      bam_index: atac_quantification/bam_index
+      peak_file: analyze_with_ArchR/peaks_bed
+      cell_by_bin_h5ad: atac_quantification/cell_by_bin_h5ad
+    out:
+      - qc_report
+
   consolidate_counts:
     in:
       count_matrix_h5ad_rna:
@@ -121,6 +153,7 @@ steps:
           atac_metadata_file
     out: [muon_dir]
     run: steps/consolidate_counts.cwl
+
   downstream_analysis:
     in:
       muon_dir:
@@ -133,3 +166,19 @@ steps:
       - rna_embedding
       - atac_embedding
     run: steps/downstream.cwl
+
+
+  rna_qc:
+      assay:
+        source: assay_rna
+      primary_matrix_path:
+        source: rna_quantification/count_matrix_h5ad
+      secondary_matrix_path:
+        source: downstream_analysis/muon_processed
+      salmon_dir:
+        source: salmon_quantification/salmon_output
+    out:
+      - scanpy_qc_results
+      - qc_metrics
+    run: salmon-rnaseq/steps/compute-qc-metrics.cwl
+    label: "Compute QC metrics"
