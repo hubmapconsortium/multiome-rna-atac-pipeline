@@ -13,6 +13,8 @@ from plot_utils import new_plot
 
 def main(mudata_raw: Path):
     expr = mu.read(str(mudata_raw))
+    expr.obs['num_genes_rna'] = (expr['rna'].X > 0).sum(axis=1)
+    mu.pp.filter_obs(expr, 'num_genes_rna', lambda x: x > 200)
     rna_expr = expr["rna"]
     rna_expr.X = rna_expr.layers["spliced"]
     print(rna_expr)
