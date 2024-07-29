@@ -64,10 +64,14 @@ outputs:
     outputSource: rna_qc/scanpy_qc_results
     type: File
     label: "Quality control metrics from Scanpy"
-  qc_report:
+  rna_qc_report:
     outputSource: rna_qc/qc_metrics
     type: File
     label: "Quality control report in JSON format"
+  atac_qc_report:
+    outputSource: atac_qc/qc_report
+    type: File
+    label "Quality control report in JSON format"
 steps:
   rna_quantification:
     in:
@@ -167,8 +171,8 @@ steps:
       - atac_embedding
     run: steps/downstream.cwl
 
-
   rna_qc:
+    in:
       assay:
         source: assay_rna
       primary_matrix_path:
@@ -176,7 +180,7 @@ steps:
       secondary_matrix_path:
         source: downstream_analysis/muon_processed
       salmon_dir:
-        source: salmon_quantification/salmon_output
+        source: rna_quantification/salmon_output
     out:
       - scanpy_qc_results
       - qc_metrics
