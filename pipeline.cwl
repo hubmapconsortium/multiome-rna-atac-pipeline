@@ -111,14 +111,14 @@ steps:
       - bam_file
       - bam_index
       - image_file
-      - archR_project
+      - archr_project
     run: sc-atac-seq-pipeline/steps/sc_atac_seq_prep_process_init.cwl
 
   analyze_with_ArchR:
     run: sc-atac-seq-pipeline/steps/sc_atac_seq_analyze_steps/archr_clustering.cwl
     in:
       image_file: atac_quantification/image_file
-      archr_project: atac_quantification/archR_project
+      archr_project: atac_quantification/archr_project
     out:
       - peaks_bed
 
