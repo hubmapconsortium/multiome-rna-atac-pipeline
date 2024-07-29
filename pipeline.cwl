@@ -155,14 +155,14 @@ steps:
       atac_metadata_file:
         source:
           atac_metadata_file
-    out: [muon_dir]
+    out: [mudata_raw]
     run: steps/consolidate_counts.cwl
 
   downstream_analysis:
     in:
-      muon_dir:
+      mudata_raw:
         source:
-          consolidate_counts/muon_dir
+          consolidate_counts/mudata_raw
     out: 
       - muon_processed
       - mofa_out
