@@ -71,7 +71,7 @@ outputs:
   atac_qc_report:
     outputSource: atac_qc/qc_report
     type: File
-    label "Quality control report in JSON format"
+    label: "Quality control report in JSON format"
 steps:
   rna_quantification:
     in:
