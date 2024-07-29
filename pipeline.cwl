@@ -37,7 +37,7 @@ inputs:
     type: File?
 outputs:
   muon_original_h5mu:
-    outputSource: consolidate_counts/muon_dir
+    outputSource: consolidate_counts/mudata_raw
     type: File
     label: "Consolidated expression cell-by-gene, cell-by-bin"
   muon_processed_h5mu:
