@@ -118,7 +118,7 @@ steps:
     run: sc-atac-seq-pipeline/steps/sc_atac_seq_analyze_steps/archr_clustering.cwl
     in:
       image_file: atac_quantification/image_file
-      archr_project: atac_quantification/archr_project
+      archr_project: atac_quantification/archR_project
     out:
       - peaks_bed
 
