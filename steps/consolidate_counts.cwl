@@ -43,7 +43,7 @@ inputs:
       position: 6
       prefix: "--atac_metadata_file"
 outputs:
-  muon_dir:
+  mudata_raw:
     type: File
     outputBinding:
       glob: "mudata_raw.h5mu"
