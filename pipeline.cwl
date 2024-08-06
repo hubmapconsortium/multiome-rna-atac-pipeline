@@ -163,7 +163,7 @@ steps:
       mudata_raw:
         source:
           consolidate_counts/mudata_raw
-    out: 
+    out:
       - muon_processed
       - mofa_out
       - joint_embedding
