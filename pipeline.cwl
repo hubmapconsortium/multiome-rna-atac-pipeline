@@ -35,6 +35,9 @@ inputs:
     type: boolean?
   atac_metadata_file:
     type: File?
+  organism:
+    type: string?
+    default: 'human'
 outputs:
   muon_original_h5mu:
     outputSource: consolidate_counts/mudata_raw
@@ -85,6 +88,8 @@ steps:
         source: expected_cell_count
       keep_all_barcodes:
         source: keep_all_barcodes
+      organism:
+        source: organism
     out:
       - salmon_output
       - count_matrix_h5ad
