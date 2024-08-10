@@ -20,5 +20,6 @@ RUN python3 -m pip install -U pip setuptools wheel \
 RUN mkdir /out /data
 
 COPY bin /opt
+COPY salmon-rnaseq/bin/analysis/compute_qc_metrics.py /opt
 COPY barcodes/*.txt /data/
 RUN chmod -R +rwx /opt
