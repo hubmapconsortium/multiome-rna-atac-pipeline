@@ -4,5 +4,6 @@ scipy
 anndata
 muon
 leidenalg
+manhole
 git+https://github.com/hubmapconsortium/mofapy2.git
 scanpy==1.9.6
