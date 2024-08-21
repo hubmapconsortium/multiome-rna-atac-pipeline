@@ -4,7 +4,7 @@ label: Compute QC metrics
 requirements:
   DockerRequirement:
     dockerPull: hubmap/multiome_analysis:latest
-baseCommand: /opt/compute_qc_metrics.py
+baseCommand: /opt/analysis/compute_qc_metrics.py
 
 inputs:
   assay:
