@@ -168,7 +168,7 @@ steps:
       mudata_raw:
         source:
           consolidate_counts/mudata_raw
-    out:
+    out: 
       - muon_processed
       - mofa_out
       - joint_embedding
@@ -189,5 +189,5 @@ steps:
     out:
       - scanpy_qc_results
       - qc_metrics
-    run: salmon-rnaseq/steps/compute-qc-metrics.cwl
+    run: steps/compute-rna-qc-metrics.cwl
     label: "Compute QC metrics"
