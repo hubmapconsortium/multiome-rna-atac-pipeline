@@ -7,4 +7,4 @@ leidenalg
 manhole
 git+https://github.com/hubmapconsortium/mofapy2.git
 scanpy==1.9.6
-tables~=3.7.0
+tables
