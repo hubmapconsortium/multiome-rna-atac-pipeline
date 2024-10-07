@@ -3,7 +3,7 @@ class: CommandLineTool
 label: Compute QC metrics
 requirements:
   DockerRequirement:
-    dockerPull: hubmap/multiome_analysis:latest
+    dockerPull: hubmap/multiome_analysis:1.2.0
 baseCommand: /opt/compute_qc_metrics.py
 
 inputs:
