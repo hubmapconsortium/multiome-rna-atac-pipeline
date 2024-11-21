@@ -1,6 +1,4 @@
-FROM ubuntu:22.04
-
-WORKDIR /opt
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -10,12 +8,20 @@ RUN apt-get update \
     python3-pip \
     python3-dev \
     git-all \
+    python3-venv \
+    python-is-python3 \ 
  && rm -rf /var/cache/apt/*
 
 COPY docker/requirements.txt /opt/requirements.txt
-RUN python3 -m pip install -U pip setuptools wheel \
- && python3 -m pip install -r /opt/requirements.txt \
- && rm -rf /root/.cache/pip
+
+RUN python3 -m venv /opt/venv \
+ && . /opt/venv/bin/activate \
+ && pip install -U pip setuptools wheel \
+ && pip install -r /opt/requirements.txt \
+ && rm -rf /root/.cache/pip \
+ && echo '. /opt/venv/bin/activate' >> /etc/bash.bashrc
+
+ENV PATH=/opt/venv/bin:${PATH}
 
 RUN mkdir /out /data
 
