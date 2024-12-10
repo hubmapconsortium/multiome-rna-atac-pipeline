@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 import json
+import re
 from argparse import ArgumentParser
 from pathlib import Path
+from typing import Optional
 
 import muon as mu
-from anndata import AnnData
 import pandas as pd
+from anndata import AnnData
+
 from utils import Assay
-from typing import Optional
-import re
 
 DATA_DIR = Path("/data")
 
 metadata_filename_pattern = re.compile(r"^[0-9A-Fa-f]{32}-metadata.tsv$")
+
 
 def find_metadata_file(directory: Path) -> Optional[Path]:
     """
@@ -24,7 +26,8 @@ def find_metadata_file(directory: Path) -> Optional[Path]:
         if metadata_filename_pattern.match(file_path.name):
             return file_path
 
-def generate_barcode_dict(rev_comp:bool = True) -> dict[str, str]:
+
+def generate_barcode_dict(rev_comp: bool = True) -> dict[str, str]:
     atac_barcode_path = "atac_barcodes_rev.txt" if rev_comp else "atac_barcodes.txt"
     with open(DATA_DIR / atac_barcode_path) as f:
         atac_barcodes = [line.strip() for line in f]
@@ -73,7 +76,7 @@ def main(
     rna_genome_build_path: Path,
     atac_genome_build_path: Path,
     assay_atac: Assay,
-    atac_metadata_file: Path=None,
+    atac_metadata_file: Path = None,
 ):
     rna_expr = mu.read(str(rna_file))
     cbb = mu.read(str(atac_cell_by_bin))
@@ -101,7 +104,9 @@ def main(
         rev_comp_barcode_allow_set = set(rev_comp_barcode_dict.keys())
         first_thousand_barcodes = set(list(cbg.obs.index)[0:1000])
 
-        rev_comp = (rev_comp_barcode_allow_set & first_thousand_barcodes) > (barcode_allow_set & first_thousand_barcodes)
+        rev_comp = (rev_comp_barcode_allow_set & first_thousand_barcodes) > (
+            barcode_allow_set & first_thousand_barcodes
+        )
         barcode_dict = rev_comp_barcode_dict if rev_comp else barcode_dict
 
         cbg = map_atac_barcodes(cbg, barcode_dict)
@@ -127,8 +132,7 @@ if __name__ == "__main__":
     p.add_argument("--rna_genome_build_path", type=Path)
     p.add_argument("--atac_genome_build_path", type=Path)
     p.add_argument("--assay_atac", choices=list(Assay), type=Assay)
-    p.add_argument("--atac_metadata_file", type=Path, nargs='?')
-
+    p.add_argument("--atac_metadata_file", type=Path, nargs="?")
 
     args = p.parse_args()
 
