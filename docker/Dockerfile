@@ -29,4 +29,3 @@ COPY bin /opt
 COPY salmon-rnaseq/bin/analysis /opt
 COPY salmon-rnaseq/bin/common /opt
 COPY barcodes/*.txt /data/
-RUN chmod -R +rwx /opt
