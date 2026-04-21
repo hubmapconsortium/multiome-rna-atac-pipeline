@@ -2,10 +2,10 @@ git+https://github.com/hubmapconsortium/fastq-utils@v0.2.3
 pandas
 scipy
 anndata==0.12.7
-mudata
-muon
+mudata==0.3.6
+muon==0.1.7
 leidenalg
 manhole
 git+https://github.com/hubmapconsortium/mofapy2.git
-scanpy
+scanpy==1.11.5
 tables
