@@ -11,10 +11,26 @@ from muon import prot as pt
 from plot_utils import new_plot
 
 
+def filter_mudata(mudata):
+    # Split up the object
+    rna = mudata['rna']
+    cbb = mudata['atac_cell_by_bin']
+    cbg = mudata['atac_cell_by_gene']
+    # Filter based on gene counts
+    sc.pp.filter_cells(rna, min_genes=200)
+    cbb_filtered = cbb[cbb.obs_names.isin(rna.obs_names)].copy()
+    cbg_filtered = cbg[cbg.obs_names.isin(rna.obs_names)].copy()
+    # Put the object back together
+    expr_filtered = mu.MuData({'rna': rna, 'atac_cell_by_bin': cbb_filtered, 'atac_cell_by_gene': cbg_filtered})
+    return expr_filtered
+
+
 def main(mudata_raw: Path):
     expr = mu.read(str(mudata_raw))
     expr.obs["num_genes_rna"] = (expr["rna"].X > 0).sum(axis=1)
-    mu.pp.filter_obs(expr, "num_genes_rna", lambda x: x > 200)
+    # Newer versions of anndata are incompatible with Muon filtering
+    # Need to filter each modality separately
+    expr = filter_mudata(expr)
     rna_expr = expr["rna"]
     rna_expr.X = rna_expr.layers["spliced"]
     print(rna_expr)
@@ -98,7 +114,6 @@ def main(mudata_raw: Path):
     mdata_raw.update()
     # # if we filter the cells at the RNA QC step, subset them in the protein modality
     mu.pp.intersect_obs(mdata_raw)
-    print(mdata_raw)
     mdata_raw.write("multiome_normalized.h5mu")
     ## Multi-omics factor analysis
     mu.tl.mofa(mdata_raw, outfile="multiome_mofa.hdf5", n_factors=30)
@@ -106,11 +121,10 @@ def main(mudata_raw: Path):
     # multiplex clustering
     sc.pp.neighbors(mdata_raw["rna"])
     sc.pp.neighbors(mdata_raw["atac_cbg"])
-    print(mdata_raw)
     sc.pp.neighbors(mdata_raw, use_rep="X_mofa", key_added="mofa")
     sc.tl.umap(mdata_raw, neighbors_key="mofa")
     sc.tl.leiden(mdata_raw, resolution=1.0, neighbors_key="mofa", key_added="leiden_wnn")
-    # print(mdata_raw)
+    mdata_raw.obs['leiden_wnn'] = mdata_raw.obs['leiden_wnn'].astype(int)
     with new_plot():
         sc.pl.umap(mdata_raw, color="leiden_wnn", legend_loc="on data")
         plt.savefig("leiden_cluster_combined.pdf")
