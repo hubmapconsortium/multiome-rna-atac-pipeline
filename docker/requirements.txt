@@ -2,7 +2,7 @@ git+https://github.com/hubmapconsortium/fastq-utils@v0.2.3
 pandas
 scipy
 anndata==0.12.7
-mudata==0.3.6
+git+https://github.com/scverse/mudata.git@c5b310be019c1aaf94c0d053001308a2533c73f5
 muon==0.1.7
 leidenalg
 manhole
