@@ -35,6 +35,8 @@ inputs:
     type: boolean?
   atac_metadata_file:
     type: File?
+  rna_barcode_file:
+    type: File?
   organism:
     type: string?
     default: 'human'
@@ -75,6 +77,9 @@ outputs:
     outputSource: atac_qc/qc_report
     type: File
     label: "Quality control report in JSON format"
+  fragment_file:
+    type: File
+    outputSource: atac_quantification/fragment_file
 steps:
   rna_quantification:
     in:
@@ -88,6 +93,8 @@ steps:
         source: expected_cell_count
       keep_all_barcodes:
         source: keep_all_barcodes
+      barcode_file:
+        source: rna_barcode_file
       organism:
         source: organism
     out:
@@ -117,6 +124,7 @@ steps:
       - bam_index
       - image_file
       - archr_project
+      - fragment file
     run: sc-atac-seq-pipeline/steps/sc_atac_seq_prep_process_init.cwl
 
   analyze_with_ArchR:
