@@ -124,7 +124,7 @@ steps:
       - bam_index
       - image_file
       - archr_project
-      - fragment file
+      - fragment_file
     run: sc-atac-seq-pipeline/steps/sc_atac_seq_prep_process_init.cwl
 
   analyze_with_ArchR:
