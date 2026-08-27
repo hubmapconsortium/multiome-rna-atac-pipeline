@@ -116,6 +116,8 @@ steps:
         source: exclude_bam
       metadata_file:
         source: atac_metadata_file
+      organism:
+        source: organism
     out:
       - cell_by_bin_h5ad
       - cell_by_gene_h5ad
@@ -132,6 +134,8 @@ steps:
     in:
       image_file: atac_quantification/image_file
       archr_project: atac_quantification/archr_project
+      organism:
+        source: organism
     out:
       - peaks_bed
 
